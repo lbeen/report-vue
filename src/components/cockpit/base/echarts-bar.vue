@@ -3,12 +3,16 @@
 </template>
 
 <script>
-import {getTurnoverDays} from '@/api/cockpit/cockpit'
-
 const echarts = require('echarts')
 
 export default {
-    name: 'turnoverDays',
+    name: 'echartsBar',
+    props: {
+        dataFun: {
+            type: Function,
+            require: true
+        }
+    },
     data() {
         return {
             id: Math.random().toString(36),
@@ -25,18 +29,18 @@ export default {
             })
         },
         refresh() {
-            getTurnoverDays(data => {
+            this.dataFun(data => {
                 const series = []
                 for (let i = 0, len = data.legend.length; i < len; i++) {
                     series.push({
                         name: data.legend[i],
-                        type: 'line',
+                        type: 'bar',
                         data: data.yAxis[i],
                         label: {
                             show: true,
                             color: '#FFFFFF',
                             fontSize: 8,
-                            position: 'bottom',
+                            position: 'top',
                             formatter(params) {
                                 if (params.value) {
                                     return params.value
@@ -59,14 +63,15 @@ export default {
                     },
                     legend: {
                         data: data.legend,
+                        itemWidth: 10,
+                        itemHeight: 8,
                         textStyle: {
                             color: "#FFFFFF",
                             fontSize: 8
-                        },
+                        }
                     },
                     xAxis: [{
                         type: 'category',
-                        boundaryGap: false,
                         data: data.xAxis,
                         splitLine: {
                             show: true,
@@ -75,9 +80,8 @@ export default {
                             }
                         },
                         axisLabel: {
-                            color: "#FFFFFF",
                             fontSize: 8,
-                            rotate: '15'
+                            color: "#FFFFFF"
                         }
                     }],
                     yAxis: {
@@ -91,7 +95,7 @@ export default {
                         axisLabel: {
                             fontSize: 8,
                             color: "#999999"
-                        },
+                        }
                     },
                     series: series
                 }

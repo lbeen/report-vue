@@ -1,8 +1,11 @@
 <template>
     <div style="display: flex">
-        <div v-for="(v, k) in data" v-bind:key="k" class="echarts-list-item">
-            <dv-decoration9 :dur="4" :style="circularStyle">{{ v }}</dv-decoration9>
-            <div class="echarts-name"><span :style="textStyle"> {{ k }} </span></div>
+        <div v-for="(v, k) in data" v-bind:key="k" class="item">
+            <dv-decoration9 :dur="4" :style="{width: circularWidth + 'px',height: circularHeight + 'px'}"
+                            class="item-circular">
+                <dv-digital-flop :config="v" :style="{height: circularHeight - 10 + 'px'}"/>
+            </dv-decoration9>
+            <div class="item-name"><span :style="{marginTop: nameMarginTop + 'px'}"> {{ k }} </span></div>
         </div>
     </div>
 </template>
@@ -16,9 +19,10 @@ export default {
         return {
             width: 0,
             height: 0,
-            data: {},
-            circularStyle: {},
-            textStyle: {}
+            circularWidth: 0,
+            circularHeight: 0,
+            nameMarginTop: 0,
+            data: {}
         }
     },
     methods: {
@@ -29,37 +33,52 @@ export default {
         },
         refresh() {
             getFeedingAndFinish(data => {
-                if (Object.keys(data).length !== Object.keys(this.data).length) {
-                    this.setStyle()
+                const keys = Object.keys(data)
+                const oldKeys = Object.keys(this.data)
+                if (keys.length !== oldKeys.length) {
+                    this.initData(data)
+                    return
                 }
-                this.data = data
+                for (let i = 0; i < keys.length; i++) {
+                    if (keys[i] !== oldKeys[i]) {
+                        this.initData(data)
+                        return
+                    }
+                }
+                this.refreshData(data)
             })
         },
-        setStyle() {
+        initData(data) {
             const height = this.height - 10
-            const width = (this.width - 50) / Object.keys(this.data).length
+            const width = (this.width - 50) / Object.keys(data).length
             if (height <= width) {
-                this.circularStyle = {
-                    'width': height + 'px',
-                    'height': height + 'px',
-                    'color': '#ffffff',
-                    'display': 'inline-flex',
-                    'font-size': '12px',
-                }
-                this.textStyle = {
-                    marginTop: '5px',
-                    color: '#ffffff'
-                }
+                this.circularWidth = height
+                this.circularHeight = height
+                this.nameMarginTop = 5
             } else {
-                this.circularStyle = {
-                    'width': width + 'px',
-                    'height': width + 'px',
-                    'color': '#ffffff',
-                    'display': 'inline-flex'
-                }
-                this.textStyle = {
-                    marginTop: (this.height - width - 21) * 2 / 3 + 'px',
-                    color: '#ffffff'
+                this.circularWidth = width
+                this.circularHeight = width
+                this.nameMarginTop = (this.height - width - 21) * 2 / 3
+            }
+
+            const newData = {}
+            for (const key in data) {
+                newData[key] = this.getFlopConf(data[key])
+            }
+            this.data = newData
+        },
+        refreshData(data) {
+            for (const key in this.data) {
+                this.data[key] = this.getFlopConf(data[key])
+            }
+        },
+        getFlopConf(value) {
+            return {
+                number: [value],
+                toFixed: 2,
+                style: {
+                    fontSize: 12,
+                    fill: '#FFFFFF'
                 }
             }
         }
@@ -68,14 +87,19 @@ export default {
 </script>
 
 <style scoped>
-.echarts-list-item {
+.item {
     width: 25%;
     text-align: center;
 }
 
-.echarts-name {
+.item-circular {
+    display: inline-flex;
+}
+
+.item-name {
     font-size: 10px;
     display: flex;
     justify-content: center;
+    color: #FFFFFF;
 }
 </style>

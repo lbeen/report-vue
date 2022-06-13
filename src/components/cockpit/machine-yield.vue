@@ -4,14 +4,14 @@
 
 <script>
 import echartsBar from '@/components/cockpit/base/echarts-bar'
-import {getSquareSingleYield} from '@/api/cockpit/cockpit'
+import {getMachineYield} from '@/api/cockpit/cockpit'
 
 export default {
-    name: 'squareSingleYield',
+    name: 'machineYield',
     components: {echartsBar},
     methods: {
         getDataFun() {
-            return getSquareSingleYield
+            return getMachineYield
         },
         init(width, height) {
             this.$refs.echarts.init(width, height)

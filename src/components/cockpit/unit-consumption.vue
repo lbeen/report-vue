@@ -1,8 +1,7 @@
 <template>
     <div class="circular-list" :style="{height: height + 'px'}">
-        <div v-for="item in list" v-bind:key="item.name" class="circular-item" :style="item.style">
-            <span class="circular-number">{{ item.numberCount }}</span>
-            <span class="circular-name">{{ item.name }}</span>
+        <div v-for="(v, k) in items" v-bind:key="k" class="circular-item" :style="v.circularStyle">
+            <dv-digital-flop :config="v.flopConfig"/>
         </div>
     </div>
 </template>
@@ -15,7 +14,7 @@ export default {
     data() {
         return {
             height: 0,
-            list: []
+            items: []
         }
     },
     methods: {
@@ -23,45 +22,52 @@ export default {
             this.height = height
             width -= 60
             height -= 10
-
             let maxWidth = width * 0.45
             if (maxWidth > height) {
                 maxWidth = height
             }
 
-            this.list = [{
-                name: '新鲜水',
-                numberCount: 0,
-                style: {
-                    width: maxWidth / 1.5 + 'px',
-                    height: maxWidth / 1.5 + 'px',
-                    backgroundColor: '#0bdd87'
-                },
-            }, {
-                name: '氩气',
-                numberCount: 0,
-                style: {
-                    width: maxWidth + 'px',
-                    height: maxWidth + 'px',
-                    backgroundColor: '#578AF1'
-                },
-            }, {
-                name: '电',
-                numberCount: 0,
-                style: {
-                    width: maxWidth / 1.8 + 'px',
-                    height: maxWidth / 1.8 + 'px',
-                    backgroundColor: '#E6A23C'
-                },
-            }]
+            this.initCircular('新鲜水', maxWidth / 1.2, '#0bdd87')
+            this.initCircular('电', maxWidth, '#578AF1')
+            this.initCircular('氩气', maxWidth / 1.5, '#E6A23C')
             this.refresh()
+        },
+        initCircular(name, radius, color) {
+            this.items.push({
+                circularStyle: {
+                    width: radius + 'px',
+                    height: radius + 'px',
+                    backgroundColor: color
+                },
+                flopConfig: {
+                    number: [0],
+                    style: {
+                        fontSize: 14,
+                        fill: '#FFFFFF'
+                    },
+                    formatter() {
+                        return name + '\n--'
+                    }
+                }
+            })
         },
         refresh() {
             getUnitConsumption(data => {
-                for (const item of this.list) {
-                    item.numberCount = data[item.name] ? data[item.name].toFixed(2) : 0
-                }
+                // this.refreshCircular(0, data, '新鲜水', 't/kg')
+                this.refreshCircular(1, data, '电', 'kWh/kg')
+                // this.refreshCircular(2, data, '氩气', 'kWh/kg')
             })
+        },
+        refreshCircular(index, data, name, unit) {
+            this.items[index].flopConfig = {
+                number: [data[name]],
+                content: name + '\n{nt}\n' + unit,
+                toFixed: 2,
+                style: {
+                    fontSize: 14,
+                    fill: '#FFFFFF'
+                }
+            }
         }
     }
 }
@@ -86,13 +92,5 @@ export default {
 
 .circular-list .circular-item:not(:first-child) {
     margin-left: 15px;
-}
-
-.circular-number {
-    font-size: 1.0rem;
-}
-
-.circular-name {
-    font-size: 0.6rem;
 }
 </style>

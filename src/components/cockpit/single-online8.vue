@@ -1,5 +1,5 @@
 <template>
-    <div :id="$options.name" :style="{height: height + 'px'}"></div>
+    <div :id="id" :style="{height: height + 'px'}"></div>
 </template>
 
 
@@ -12,6 +12,7 @@ export default {
     name: 'singleOnline8',
     data() {
         return {
+            id: Math.random().toString(36),
             height: 0,
             echarts: ''
         }
@@ -20,24 +21,17 @@ export default {
         init(width, height) {
             this.height = height
             this.$nextTick(() => {
-                this.echarts = echarts.init(document.getElementById(this.$options.name))
+                this.echarts = echarts.init(document.getElementById(this.id))
                 this.refresh()
             })
         },
         refresh() {
             getSingleOnline8(data => {
-                const seriesData = []
-                for (const key in data.series) {
-                    seriesData.push({
-                        name: key,
-                        value: data.series[key]
-                    })
-                }
                 const option = {
                     series: {
                         type: 'pie',
                         center: ['50%', '50%'],
-                        data: seriesData,
+                        data: data.series,
                         label: {
                             show: true,
                             position: 'outside',

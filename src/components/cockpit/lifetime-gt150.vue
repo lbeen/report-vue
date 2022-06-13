@@ -1,5 +1,5 @@
 <template>
-    <div :id="$options.name" :style="{height: height + 'px'}"></div>
+    <div :id="id" :style="{height: height + 'px'}"></div>
 </template>
 
 <script>
@@ -11,6 +11,7 @@ export default {
     name: 'lifetimeGt150',
     data() {
         return {
+            id: Math.random().toString(36),
             height: 0,
             echarts: ''
         }
@@ -19,7 +20,7 @@ export default {
         init(width, height) {
             this.height = height
             this.$nextTick(() => {
-                this.echarts = echarts.init(document.getElementById(this.$options.name))
+                this.echarts = echarts.init(document.getElementById(this.id))
                 this.refresh()
             })
         },

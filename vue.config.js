@@ -5,10 +5,7 @@ module.exports = {
     transpileDependencies: [/[/\\]node_modules[/\\][@\\]jiaminghi[/\\]data-view[/\\]/],
     productionSourceMap: false,
     configureWebpack: config => {
-        // 生产环境相关配置
-        console.log(process.env.NODE_ENV)
         if (process.env.NODE_ENV === 'production') {
-            //gzip压缩
             const productionGzipExtensions = ['html', 'js', 'css']
             config.plugins.push(
                 new CompressionWebpackPlugin({

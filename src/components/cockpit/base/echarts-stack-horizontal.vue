@@ -3,12 +3,16 @@
 </template>
 
 <script>
-import {getTurnoverDays} from '@/api/cockpit/cockpit'
-
-const echarts = require('echarts')
+const echarts = require("echarts")
 
 export default {
-    name: 'turnoverDays',
+    name: 'echartsStackHorizontal',
+    props: {
+        dataFun: {
+            type: Function,
+            require: true
+        }
+    },
     data() {
         return {
             id: Math.random().toString(36),
@@ -25,48 +29,55 @@ export default {
             })
         },
         refresh() {
-            getTurnoverDays(data => {
+            this.dataFun(data => {
                 const series = []
-                for (let i = 0, len = data.legend.length; i < len; i++) {
+                for (let i = 0; i < data.legend.length; i++) {
                     series.push({
                         name: data.legend[i],
-                        type: 'line',
+                        stack: 'online',
+                        type: "bar",
                         data: data.yAxis[i],
                         label: {
                             show: true,
-                            color: '#FFFFFF',
+                            color: "#FFFFFF",
                             fontSize: 8,
-                            position: 'bottom',
                             formatter(params) {
-                                if (params.value) {
-                                    return params.value
-                                }
-                                return ''
+                                return params.value ? params.value : ''
                             }
                         }
                     })
                 }
                 const option = {
-                    tooltip: {
-                        trigger: 'axis'
-                    },
                     grid: {
                         left: '3%',
                         right: '3%',
                         bottom: '3%',
-                        top: "10%",
+                        top: "20%",
                         containLabel: true
                     },
                     legend: {
                         data: data.legend,
+                        itemWidth: 10,
+                        itemHeight: 8,
                         textStyle: {
                             color: "#FFFFFF",
                             fontSize: 8
-                        },
+                        }
                     },
-                    xAxis: [{
-                        type: 'category',
-                        boundaryGap: false,
+                    xAxis: {
+                        splitLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#2D3B53'
+                            }
+                        },
+                        axisLabel: {
+                            fontSize: 8,
+                            color: '#999',
+                            rotate: '15'
+                        }
+                    },
+                    yAxis: [{
                         data: data.xAxis,
                         splitLine: {
                             show: true,
@@ -75,24 +86,10 @@ export default {
                             }
                         },
                         axisLabel: {
-                            color: "#FFFFFF",
+                            color: '#FFFFFF',
                             fontSize: 8,
-                            rotate: '15'
                         }
                     }],
-                    yAxis: {
-                        type: 'value',
-                        splitLine: {
-                            show: true,
-                            lineStyle: {
-                                color: '#2D3B53'
-                            }
-                        },
-                        axisLabel: {
-                            fontSize: 8,
-                            color: "#999999"
-                        },
-                    },
                     series: series
                 }
                 this.echarts.clear()
