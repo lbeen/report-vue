@@ -26,8 +26,7 @@
 export default {
     data() {
         return {
-            height: '',
-
+            height: 0,
             activeMenu: '/manage/kanban/page',
             menus: [{
                 index: 'kanban',

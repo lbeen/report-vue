@@ -6,8 +6,7 @@
                     <el-col :span="5">
                         <el-form-item label="工厂">
                             <el-select v-model="queryParam.factory" size="small" clearable placeholder="工厂">
-                                <el-option v-for="item in factories" :key="item.value" :value="item.value"
-                                           :label="item.name"></el-option>
+                                <el-option v-for="(v, k) in factories" :key="k" :value="k" :label="v"></el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -32,7 +31,9 @@
             <el-row>
                 <el-table :data="list" stripe :max-height="tableMaxHeight">
                     <el-table-column label="序号" type="index" width="50px"></el-table-column>
-                    <el-table-column label="工厂" prop="factory_name" align="center" width="50px"></el-table-column>
+                    <el-table-column label="工厂" align="center" width="50px">
+                        <template v-slot="scope">{{scope.factory}}</template>
+                    </el-table-column>
                     <el-table-column label="名称" align="center" width="200px">
                         <template v-slot="scope">
                             <el-link type="primary" target="_blank"
@@ -59,8 +60,7 @@
                     <el-col :span="12">
                         <el-form-item label="工厂">
                             <el-select v-model="editData.factory" size="small" clearable placeholder="工厂">
-                                <el-option v-for="item in factories" :key="item.value" :value="item.value"
-                                           :label="item.name"></el-option>
+                                <el-option v-for="(v, k) in factories" :key="k" :value="k" :label="v"></el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -148,13 +148,10 @@ export default {
             },
 
             types: ['HTML', 'PPT', 'VIDEO'],
-            factories: [{
-                value: 'BS',
-                name: '保山'
-            }, {
-                value: 'TC',
-                name: '腾冲'
-            }],
+            factories: {
+                'BS': '保山',
+                'TC': '腾冲'
+            },
             locations: []
         }
     },
@@ -169,10 +166,7 @@ export default {
             this.tableMaxHeight = window.innerHeight - 100
         },
         query() {
-            getResources(this.queryParam, result => {
-                this.list = result.data
-                console.log(this.list)
-            })
+            getResources(this.queryParam, result => this.list = result.data)
         },
         getResourceLink(type, location, count, duration) {
             switch (type) {
