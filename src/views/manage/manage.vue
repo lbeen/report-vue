@@ -26,8 +26,9 @@
 export default {
     data() {
         return {
-            height: 0,
-            activeMenu: '/manage/kanban/page',
+            height: '',
+
+            activeMenu: '',
             menus: [{
                 index: 'kanban',
                 name: '看板配置',
@@ -44,7 +45,14 @@ export default {
     created() {
         this.setHeight()
         window.addEventListener("resize", this.setHeight)
-        this.goto(this.activeMenu)
+
+        const path = this.$router.history.current.path
+        if (path === '/manage') {
+            this.activeMenu = this.menus[0].children[0].index
+            this.goto(this.activeMenu)
+        } else {
+            this.activeMenu = path
+        }
     },
     methods: {
         setHeight() {
@@ -54,7 +62,7 @@ export default {
             if (this.$router.history.current.path === index) {
                 return
             }
-            this.$router.replace(index)
+            this.$router.push(index)
         }
     }
 }

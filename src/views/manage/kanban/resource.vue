@@ -32,7 +32,7 @@
                 <el-table :data="list" stripe :max-height="tableMaxHeight">
                     <el-table-column label="序号" type="index" width="50px"></el-table-column>
                     <el-table-column label="工厂" align="center" width="50px">
-                        <template v-slot="scope">{{scope.factory}}</template>
+                        <template v-slot="scope">{{factories[scope.row.factory]}}</template>
                     </el-table-column>
                     <el-table-column label="名称" align="center" width="200px">
                         <template v-slot="scope">
@@ -123,6 +123,7 @@
 
 <script>
 import {getResources, getLocations, saveResource} from '@/api/manage/kanban'
+import {getResourceLink} from '@/assets/kanban/js/kanban'
 
 export default {
     data() {
@@ -169,17 +170,7 @@ export default {
             getResources(this.queryParam, result => this.list = result.data)
         },
         getResourceLink(type, location, count, duration) {
-            switch (type) {
-                case 'HTML':
-                    return location
-                case 'PPT':
-                    return '/page/kanban/ppt.html?location=' + location + '&count=' + count + '&duration=' + duration
-
-                case 'VIDEO':
-                    return '/page/kanban/video.html?location=' + location
-                default:
-                    return ''
-            }
+            return getResourceLink(type, location, count, duration)
         },
         openEdit(item) {
             if (item) {
@@ -216,32 +207,32 @@ export default {
         },
         save() {
             if (!this.editData.factory) {
-                this.$mes.promptError('工厂不能为空')
+                this.$message.error('工厂不能为空')
                 return
             }
             if (!this.editData.type) {
-                this.$mes.promptError('资源类型不能为空')
+                this.$message.error('资源类型不能为空')
                 return
             }
             if (!this.editData.name) {
-                this.$mes.promptError('资源名称不能为空')
+                this.$message.error('资源名称不能为空')
                 return
             }
             if (this.editData.type === 'VIDEO') {
                 if (!this.editData.location || this.editData.location.length < 0) {
-                    this.$mes.promptError('资源位置为必填项')
+                    this.$message.error('资源位置为必填项')
                     return
                 }
             } else if (!this.editData.location) {
-                this.$mes.promptError('资源位置不能为空')
+                this.$message.error('资源位置不能为空')
                 return
             }
             if (!this.editData.count) {
-                this.$mes.promptError('资源数量不能为空')
+                this.$message.error('资源数量不能为空')
                 return
             }
             if (this.editData.type !== 'HTML' && !this.editData.duration) {
-                this.$mes.promptError('资源时长不能为空')
+                this.$message.error('资源时长不能为空')
                 return
             }
             saveResource('/kanban/conf/saveResource', {
