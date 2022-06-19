@@ -53,17 +53,15 @@ function checkResponse(response, success, error){
         if (success) {
             success(result)
         }
-        // eslint-disable-next-line no-debugger
-        debugger
         if (result.msg) {
-            vue.$mes.promptSuccess(result.msg)
+            vue.$message.success(result.msg)
         }
     } else {
         if (error) {
             error(result)
         }
         if (result) {
-            vue.$mes.promptError(result.msg)
+            vue.$message.error(result.msg)
         }
     }
 }
